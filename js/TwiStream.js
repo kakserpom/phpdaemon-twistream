@@ -1,107 +1,117 @@
-$.TwiStream =
-{
- "serverUrl": {
-                ws: 'ws://'+document.domain+':8047/TwiStream',
-                comet  : 'http://'+document.domain+':8047/WebSocketOverCOMET/?_route=TwiStream',
-                polling : 'http://'+document.domain+':8047/WebSocketOverCOMET/?_route=TwiStream'
-              },
- "tabs": {},
- "curTab": '#room',
- "status": null,
- "authkey": null,
- "ws": null,
- "onStatusReady": null,
- "username": null,
- "lastRecipients": null,
- "userlistUpdateTimeout": null,
- "sentBytes": 0,
- "recvBytes": 0,
- "packetSeq": 1,
- "callbacks": {},
- query: function(o,c,d)
- {
-  if ($.TwiStream.status == 0) {return;}
-  o._id = ++$.TwiStream.packetSeq;
-  if (c)
-  {
-   $.TwiStream.callbacks[o._id] = [c,d];
-   $('.ajaxloader').show();
-  }
-  $.TwiStream.sendPacket(o);
- },
- "showEvent": function(o)
- {
-  if (o.tweet != null) {
-		var t = o.tweet;
-		$('#tweets').prepend($('<div class="tweet">').html(htmlspecialchars(t.text)+' --- '+htmlspecialchars(t.user.screen_name)));
-	}
-	else if (o.mtype != null)
-	{
-	 $('#tweets').prepend('<div class="sysmsg" style="color: '+htmlspecialchars(o.color)+'"> '+htmlspecialchars(o.text)+'</div>');
-	}
-	while ($('#tweets div').size() > 10) {$('#tweets div:last').remove();};
- },
- "sendPacket": function(packet)
- {
-  var s = $.toJSON(packet);
-  $.TwiStream.sentBytes += s.length;
-  try {$.TwiStream.ws.send(s);}
-  catch (err) {}
- },
- "subscribe": function(attrs)
- {
-  $.TwiStream.sendPacket({
-   "cmd": "subscribe",
-   "attrs": attrs,
-  });
- },
- "keepalive": function()
- {
-  $.TwiStream.sendPacket({
-   "cmd": "keepalive"
-  });
- },
- "init": function()
- {
-   $.address.init(function(event) {}).change($.TwiStream.addressOnChange);
- },
- "addressOnChange": function()
- {
- },
- "initConnect": function()
- {
-  $.TwiStream.connect();
-  setInterval(function()
-  {
-   $.TwiStream.connect();
-   $('.sentDataCounter').html(fsize($.TwiStream.sentBytes));
-   $('.recvDataCounter').html(fsize($.TwiStream.recvBytes));
-  },1000);
- },
- "connect": function()
- {
-  if ($.TwiStream.ws != null)
-  {
-   if ($.TwiStream.ws.readyState != 2) {return;}
-   else
-   {
-    $.TwiStream.showEvent({"text": "* Trying to reconnect..", "color": "gray", "mtype": "system"});
-   }
-  }
-  $.TwiStream.showEvent({"text": "* Connecting...", "color": "gray", "mtype": "system"});
-  $.TwiStream.ws = new WebSocketConnection({url: $.TwiStream.serverUrl,root: '/js/'});
-  $.TwiStream.ws.onopen = function()
-  {
-   $.TwiStream.showEvent({"text": "* Connected successfully.", "color": "gray", "mtype": "system"});
-   $.TwiStream.subscribe({track:'php'});
-   setInterval(function()
-   {
-    $.TwiStream.keepalive();
-   },20000);
-  };
-  $.TwiStream.ws.onmessage = function(e)
-  {
-   if (e.data == null) {return;}
+$.TwiStream = {
+	"serverUrl": {
+		ws      : 'ws://'+document.domain+':8047/TwiStream',
+		comet   : 'http://'+document.domain+':8047/WebSocketOverCOMET/?_route=TwiStream',
+		polling : 'http://'+document.domain+':8047/WebSocketOverCOMET/?_route=TwiStream'
+	},
+	"tabs": {},
+	"curTab": '#room',
+	"status": null,
+	"authkey": null,
+	"ws": null,
+	"onStatusReady": null,
+	"username": null,
+	"lastRecipients": null,
+	"userlistUpdateTimeout": null,
+	"sentBytes": 0,
+	"recvBytes": 0,
+	"packetSeq": 1,
+	"callbacks": {},
+
+	query: function(o, c, d) {
+		if ($.TwiStream.status == 0) {
+			return;
+		}
+
+		o._id = ++$.TwiStream.packetSeq;
+
+		if (c) {
+			$.TwiStream.callbacks[o._id] = [c,d];
+			$('.ajaxloader').show();
+		}
+
+		$.TwiStream.sendPacket(o);
+	},
+
+	"showEvent": function(o) {
+		if (o.tweet != null) {
+			var t = o.tweet;
+			$('#tweets').prepend($('<div class="tweet">').html(htmlspecialchars(t.text)+' --- '+htmlspecialchars(t.user.screen_name)));
+		} else if (o.mtype != null) {
+			$('#tweets').prepend('<div class="sysmsg" style="color: '+htmlspecialchars(o.color)+'"> '+htmlspecialchars(o.text)+'</div>');
+		}
+
+		while ($('#tweets div').size() > 10) {
+			$('#tweets div:last').remove();
+		};
+	},
+
+	"sendPacket": function(packet) {
+		var s = $.toJSON(packet);
+		$.TwiStream.sentBytes += s.length;
+
+		try {
+			$.TwiStream.ws.send(s);
+		} catch (err) {
+			console.dir(err);
+		}
+	},
+
+	"subscribe": function(attrs) {
+		$.TwiStream.sendPacket({
+			"cmd": "subscribe",
+			"attrs": attrs,
+		});
+	},
+
+	"keepalive": function() {
+		$.TwiStream.sendPacket({
+			"cmd": "keepalive"
+		});
+	},
+
+	"init": function() {
+		$.address.init(function(event) {}).change($.TwiStream.addressOnChange);
+	},
+
+	"addressOnChange": function() {
+
+	},
+
+	"initConnect": function() {
+		$.TwiStream.connect();
+
+		setInterval(function() {
+			$.TwiStream.connect();
+
+			$('.sentDataCounter').html(fsize($.TwiStream.sentBytes));
+			$('.recvDataCounter').html(fsize($.TwiStream.recvBytes));
+		}, 1000);
+	},
+
+	"connect": function() {
+		if ($.TwiStream.ws != null) {
+			if ($.TwiStream.ws.readyState != 2) {
+				return;
+			} else {
+				$.TwiStream.showEvent({"text": "* Trying to reconnect..", "color": "gray", "mtype": "system"});
+			}
+		}
+
+		$.TwiStream.showEvent({"text": "* Connecting...", "color": "gray", "mtype": "system"});
+		$.TwiStream.ws = new WebSocketConnection({url: $.TwiStream.serverUrl,root: '/js/'});
+
+		$.TwiStream.ws.onopen = function() {
+			$.TwiStream.showEvent({"text": "* Connected successfully.", "color": "gray", "mtype": "system"});
+			$.TwiStream.subscribe({track:'php'});
+
+			setInterval(function() {
+				$.TwiStream.keepalive();
+			}, 20000);
+		};
+
+		$.TwiStream.ws.onmessage = function(e) {
+			if (e.data == null) {return;}
    $.TwiStream.recvBytes += e.data.length;
    var o = $.parseJSON(e.data); //$.urldecode(e.data));
    if ((typeof (o._id) != 'undefined') && (typeof ($.TwiStream.callbacks[o._id]) != 'undefined'))
@@ -174,7 +184,8 @@ function Dump(d, l, t) {
     }
     return s;
 }
-$(document).ready(function() {
+
+(function() {
 	$.TwiStream.init();
 	$.TwiStream.initConnect();
-});
+})();

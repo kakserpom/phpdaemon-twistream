@@ -9,5 +9,17 @@
 		<script src="js/websocket.js"></script>
 
 		ololo
+		
+		<script>
+			$(function() {
+				var tmp = new WebSocketConnection({
+					url: '/test',
+					
+					onReady: function() {
+						console.dir(tmp);
+					}
+				});
+			});
+		</script>
 	</body>
 </html>

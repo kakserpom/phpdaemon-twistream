@@ -1,9 +1,9 @@
 $.TwiStream =
 {
  "serverUrl": {
-                ws: 'ws://'+document.domain+'/TwiStream',
-                comet  : 'http://'+document.domain+'/WebSocketOverCOMET/?_route=TwiStream',
-                polling : 'http://'+document.domain+'/WebSocketOverCOMET/?_route=TwiStream'
+                ws: 'ws://'+document.domain+':8047/TwiStream',
+                comet  : 'http://'+document.domain+':8047/WebSocketOverCOMET/?_route=TwiStream',
+                polling : 'http://'+document.domain+':8047/WebSocketOverCOMET/?_route=TwiStream'
               },
  "tabs": {},
  "curTab": '#room',
@@ -103,7 +103,7 @@ $.TwiStream =
   {
    if (e.data == null) {return;}
    $.TwiStream.recvBytes += e.data.length;
-   var o = $.parseJSON($.urldecode(e.data));
+   var o = $.parseJSON(e.data); //$.urldecode(e.data));
    if ((typeof (o._id) != 'undefined') && (typeof ($.TwiStream.callbacks[o._id]) != 'undefined'))
    {
     $.TwiStream.callbacks[o._id][0](o,$.TwiStream.callbacks[o._id][1]);

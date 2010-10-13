@@ -48,14 +48,14 @@ WebSocketConnection = function() {
 	 * Close the connection
 	 */
 	this.close = function() {
-		this.provider.close();
+		provider.close();
 	}
 	
 	/**
 	 * Send data to the server
 	 */
 	this.send = function(data) {
-		this.provider.send(data);
+		provider.send(data);
 	}
 	
 	this.connected = function() {
@@ -66,12 +66,16 @@ WebSocketConnection = function() {
 // Provider event handlers
 // ---------------------------------------------------------	
 
-	var onProviderOpen = function() {
+	var onProviderOpen = function() {	
 		state = WebSocketConnection.OPEN;
+		
+		self.onConnected();
 	}
 	
 	var onProviderClose = function() {
 		state = WebSocketConnection.CLOSED;
+		
+		self.onDisconnected();
 	}
 	
 	var onProviderMessage = function(message) {
@@ -130,7 +134,7 @@ WebSocketConnection = function() {
 			this[key] = settings[key];
 		}
 	}
-	
+
 // ---------------------------------------------------------
 // Let's go
 // ---------------------------------------------------------	

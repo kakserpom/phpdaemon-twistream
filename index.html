@@ -4,12 +4,13 @@
 		<title>TwiStream &mdash; the realtime Twitter stream</title>
 		
 		<link rel="stylesheet" type="text/css" href="css/twistream.css" />
+
+		<script src="js/jquery-1.4.2.js"></script>
+		<script src="js/jquery.json-2.2.js"></script>
+		<script src="js/websocket.js"></script>
 	</head>
 
 	<body>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-		<script src="js/websocket.js"></script>
-		
 		<script src="js/twistream.js"></script>
 
 		<header id="top">
@@ -22,7 +23,7 @@
 			(function($) {
 				$.twistream( {
 					url: {
-						websocket: 'ws://test/test'
+						websocket: 'ws://' + document.domain + ':8047/TwiStream'
 					}
 				} );
 			})(jQuery);

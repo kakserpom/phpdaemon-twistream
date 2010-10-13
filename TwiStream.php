@@ -134,7 +134,7 @@ class TwiStreamRequest extends Request {
 		try {
 			$this->initStream();
 		} catch (BadStreamDescriptorException $e) {
-			$this->out('Connection error.');
+//			$this->out('Connection error.');
 			$this->finish();
 		}
 	}

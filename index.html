@@ -13,10 +13,12 @@
 		<script>
 			$(function() {
 				var tmp = new WebSocketConnection({
-					url: '/test',
+					url: {
+						websocket: 'ws://test.ru/test'
+					},
 					
 					onReady: function() {
-						console.dir(tmp);
+						console.dir(this);
 					}
 				});
 			});

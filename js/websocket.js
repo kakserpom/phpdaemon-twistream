@@ -24,9 +24,8 @@ function WebSocketEncodeData(data) {
 	}
 }
 
-WebSocketConnection = function(settings) {
+WebSocketConnection = function() {
 	
-	var settings = settings || [];
 	var provider = null;	
 	var self = this;
 	
@@ -34,7 +33,11 @@ WebSocketConnection = function(settings) {
 // Public event handlers
 // ---------------------------------------------------------	
 
-	this.onReady = function() { };
+	this.onReady        = function() { };
+	this.onError        = function(error) { };
+	this.onMessage      = function(message) { };
+	this.onConnected    = function() { };
+	this.onDisconnected = function() { };
 	
 // ---------------------------------------------------------
 // Public methods
@@ -44,18 +47,14 @@ WebSocketConnection = function(settings) {
 	 * Close the connection
 	 */
 	this.close = function() {
-		if (this.provider) {
-			this.provider.close();
-		}
+		this.provider.close();
 	}
 	
 	/**
 	 * Send data to the server
 	 */
 	this.send = function(data) {
-		if (this.provider) {
-			this.provider.send(data);
-		}
+		this.provider.send(data);
 	}	
 	
 // ---------------------------------------------------------
@@ -71,7 +70,7 @@ WebSocketConnection = function(settings) {
 	}
 	
 	var onProviderMessage = function(message) {
-	
+		self.onMessage(message);
 	}
 	
 	var onProviderError = function(error) {
@@ -89,11 +88,12 @@ WebSocketConnection = function(settings) {
 			console.error(e.message);
 			return false;
 		}
-		
+
 		provider.onopen    = onProviderOpen;
 		provider.onmessage = onProviderMessage;
 		provider.onclose   = onProviderClose;
-		provider.onerror   = onProviderError;
+		
+		provider.onerror   = self.onError;
 		
 		self.onReady();
 
@@ -104,6 +104,8 @@ WebSocketConnection = function(settings) {
 // Check settings
 // ---------------------------------------------------------
 	
+	var settings = arguments[0] || {};	
+	
 	// Checking the settings
 	if (!('url' in settings)) {
 		console.error('url is not defined in settings');
@@ -112,8 +114,16 @@ WebSocketConnection = function(settings) {
 		
 	settings['jspath'] = settings['jspath'] || '/js/';
 	
-	if ('onReady' in settings) {
-		this.onReady = settings.onReady;
+	// Overriding event handlers from settings
+	// @todo maybe there is a better way to do this?
+	for (var key in settings) {
+		if (
+			key.length > 1
+			&& key.substring(0, 2) === 'on'
+			&& key in this
+		) {
+			this[key] = settings[key];
+		}
 	}
 	
 // ---------------------------------------------------------

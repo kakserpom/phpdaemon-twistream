@@ -28,6 +28,7 @@ WebSocketConnection = function() {
 	
 	var provider = null;	
 	var self = this;
+	var state = WebSocketConnection.CLOSED;
 	
 // ---------------------------------------------------------
 // Public event handlers
@@ -55,18 +56,22 @@ WebSocketConnection = function() {
 	 */
 	this.send = function(data) {
 		this.provider.send(data);
-	}	
+	}
+	
+	this.connected = function() {
+		return state === WebSocketConnection.OPEN;
+	}
 	
 // ---------------------------------------------------------
 // Provider event handlers
 // ---------------------------------------------------------	
 
 	var onProviderOpen = function() {
-	
+		state = WebSocketConnection.OPEN;
 	}
 	
 	var onProviderClose = function() {
-	
+		state = WebSocketConnection.CLOSED;
 	}
 	
 	var onProviderMessage = function(message) {
@@ -104,7 +109,7 @@ WebSocketConnection = function() {
 // Check settings
 // ---------------------------------------------------------
 	
-	var settings = arguments[0] || {};	
+	var settings = arguments[0] || { };	
 	
 	// Checking the settings
 	if (!('url' in settings)) {
@@ -148,3 +153,11 @@ WebSocketConnection = function() {
 
 	return result;
 }
+
+// ---------------------------------------------------------
+// Constants
+// ---------------------------------------------------------
+	
+WebSocketConnection.CLOSED     = 0;
+WebSocketConnection.CONNECTING = 1;
+WebSocketConnection.OPEN       = 2;

@@ -2,26 +2,26 @@
 <html>
 	<head>
 		<title>TwiStream &mdash; the realtime Twitter stream</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/twistream.css" />
 	</head>
 
 	<body>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 		<script src="js/websocket.js"></script>
+		
+		<script src="js/twistream.js"></script>
 
 		ololo
 		
 		<script>
-			$(function() {
-				var tmp = new WebSocketConnection({
+			(function($) {
+				$.twistream( {
 					url: {
-						websocket: 'ws://test.ru/test'
-					},
-					
-					onReady: function() {
-						console.dir(this);
+						websocket: 'ws://test/test'
 					}
-				});
-			});
+				} );
+			})(jQuery);
 		</script>
 	</body>
 </html>

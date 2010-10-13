@@ -1,0 +1,11 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	font-family: "Lucida Sans", "Segoe UI", "Trebuchet MS", Ubuntu, Tahoma;
+	font-size: 14pt;
+	background-color: #1a1b1f;
+	color: white;
+}

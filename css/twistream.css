@@ -1,11 +1,37 @@
 * {
 	margin: 0px;
 	padding: 0px;
+	font-family: "Lucida Sans", "Segoe UI", "Trebuchet MS", Ubuntu, Tahoma;
+	font-size: 14pt;	
 }
 
 body {
-	font-family: "Lucida Sans", "Segoe UI", "Trebuchet MS", Ubuntu, Tahoma;
-	font-size: 14pt;
 	background-color: #1a1b1f;
 	color: white;
+}
+
+header {
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	padding: 0.5em;	
+	background-color: #2a2b2f;
+	border-bottom: 1px solid grey;
+}
+
+h1, header input {
+	font-size: 16pt;
+}
+
+header h1 {
+	float: left;
+}
+
+header input {
+	float: right;
+	font-size: 14pt;
+	margin-right: 1em;
+	background-color: #1a1b1f;
+	color: white;
+	border: 1px solid grey;
 }

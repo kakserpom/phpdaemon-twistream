@@ -60,7 +60,7 @@ WebSocketConnection = function() {
 	this.connected = function() {
 		return (
 			provider
-			&& provider.prototype.OPEN === provider.readyState
+			&& provider.OPEN === provider.readyState
 		);
 	}
 	
@@ -161,13 +161,26 @@ WebSocketConnection = function() {
 	
 	if (!result) {
 		// Building WebSocket skeleton
-		WebSocketProvider = {};
-
+		WebSocketProvider = function(url) { 
+			this.URL = url;
+			this.bufferedAmount = 0;
+			this.readyState = 2;
+		};
+		
 		WebSocketProvider.prototype.CONNECTING = 0;
 		WebSocketProvider.prototype.OPEN       = 1;
 		WebSocketProvider.prototype.CLOSED     = 2;
+		
+		WebSocketProvider.prototype.onopen    = function() {};
+		WebSocketProvider.prototype.onmessage = function() {};
+		WebSocketProvider.prototype.onclose   = function() {};
+		WebSocketProvider.prototype.onerror   = function() {};
 
+		WebSocketProvider.prototype.close     = function() {};
+		WebSocketProvider.prototype.send      = function(data) {};
+		
 		// @todo check flash
+		result = initProvider(settings['url']['websocket']);
 	}
 
 	return result;

@@ -12,8 +12,6 @@
 		} );
 
 		var addTweet = function(tweetObj) {
-			console.dir(tweetObj);
-
 			var txt = tweetObj.tweet.text;
 
 			// preparing nicks
@@ -33,8 +31,8 @@
 				.html(txt)
 				.css( {
 					position: 'absolute',
-					top: (Math.floor(Math.random() * 80 + 1)) + '%',
-					left: '150%',
+					top: (Math.floor(Math.random() * window.innerHeight + 1)) + 'px',
+					left: (window.innerWidth + 200) + 'px',
 					opacity: 0.8
 				} );
 
@@ -45,8 +43,10 @@
 			tweet
 				.appendTo('body')
 				.animate( {
-					left: '-50%'
-				}, 20000);
+					left: '-400px'
+				}, 15000, 'linear', function() {
+					$(this).remove();
+				});
 		}
 		
 		var sendPacket = function(data) {

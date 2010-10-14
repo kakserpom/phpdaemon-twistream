@@ -8,6 +8,7 @@ body {
 	background-color: #1a1b1f;
 	color: white;
 	font-size: 14pt;
+	overflow: hidden;
 }
 
 header {
@@ -17,6 +18,7 @@ header {
 	padding: 0.5em;	
 	background-color: #2a2b2f;
 	border-bottom: 1px solid grey;
+	z-index: 666;
 }
 
 h1, header input {
@@ -47,6 +49,7 @@ header input {
 	padding: 0.5em;
 	display: block;
 	min-height: 50px;
+	background-color: black;
 
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;

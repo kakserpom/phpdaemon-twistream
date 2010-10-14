@@ -31,11 +31,22 @@
 			var tweet = $('<div></div>')
 				.addClass('tweet')
 				.html(txt)
-				.prependTo('#temp');
+				.css( {
+					position: 'absolute',
+					top: (Math.floor(Math.random() * 80 + 1)) + '%',
+					left: '150%',
+					opacity: 0.8
+				} );
 
 			$('<img></img>')
 				.attr('src', tweetObj.tweet.user.profile_image_url)
 				.prependTo(tweet);
+
+			tweet
+				.appendTo('body')
+				.animate( {
+					left: '-50%'
+				}, 20000);
 		}
 		
 		var sendPacket = function(data) {

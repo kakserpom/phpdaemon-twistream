@@ -36,6 +36,9 @@
 					track: 'php'
 				});	
 			},
+			onError: function(error) {
+				console.dir(error);
+			},
 			onMessage: function(msg) {
 				console.dir(msg);
 			}

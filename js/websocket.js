@@ -83,7 +83,7 @@ WebSocketConnection = function() {
 	}
 	
 	var onProviderError = function(error) {
-	
+		self.onError(error);
 	}
 
 // ---------------------------------------------------------
@@ -91,12 +91,24 @@ WebSocketConnection = function() {
 // ---------------------------------------------------------		
 	
 	var initProvider = function(url) {
+		if ('undefined' === typeof(WebSocketProvider)) {
+			self.onError({
+				description: 'No provider defined',
+				err: 1
+			});
+
+			return false;
+		}
+
 		try {
 			provider = new WebSocketProvider(url);
 		} catch (e) {
-			console.error(e.message);
+			self.onError(e);
+
 			return false;
 		}
+
+		state = WebSocketConnection.CONNECTING;
 
 		provider.onopen    = onProviderOpen;
 		provider.onmessage = onProviderMessage;
@@ -147,7 +159,7 @@ WebSocketConnection = function() {
 		&& 'websocket' in settings['url']
 	) {
 		// native WebSocket found
-		WebSocketProvider = WebSocket;
+//		WebSocketProvider = WebSocket;
 		result = initProvider(settings['url']['websocket']);
 	}
 	

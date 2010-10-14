@@ -28,7 +28,6 @@ WebSocketConnection = function() {
 	
 	var provider = null;	
 	var self = this;
-	var state = WebSocketConnection.CLOSED;
 	
 // ---------------------------------------------------------
 // Public event handlers
@@ -60,9 +59,8 @@ WebSocketConnection = function() {
 	
 	this.connected = function() {
 		return (
-			WebSocketConnection.OPEN === state
-			// WebSocket.OPEN = 1
-			&& 1 === provider.readyState
+			provider
+			&& provider.prototype.OPEN === provider.readyState
 		);
 	}
 	
@@ -71,14 +69,10 @@ WebSocketConnection = function() {
 // ---------------------------------------------------------	
 
 	var onProviderOpen = function() {	
-		state = WebSocketConnection.OPEN;
-		
 		self.onConnected();
 	}
 	
 	var onProviderClose = function() {
-		state = WebSocketConnection.CLOSED;
-		
 		self.onDisconnected();
 	}
 	
@@ -111,8 +105,6 @@ WebSocketConnection = function() {
 
 			return false;
 		}
-
-		state = WebSocketConnection.CONNECTING;
 
 		provider.onopen    = onProviderOpen;
 		provider.onmessage = onProviderMessage;
@@ -168,16 +160,15 @@ WebSocketConnection = function() {
 	}
 	
 	if (!result) {
+		// Building WebSocket skeleton
+		WebSocketProvider = {};
+
+		WebSocketProvider.prototype.CONNECTING = 0;
+		WebSocketProvider.prototype.OPEN       = 1;
+		WebSocketProvider.prototype.CLOSED     = 2;
+
 		// @todo check flash
 	}
 
 	return result;
 }
-
-// ---------------------------------------------------------
-// Constants
-// ---------------------------------------------------------
-	
-WebSocketConnection.CLOSED     = 0;
-WebSocketConnection.CONNECTING = 1;
-WebSocketConnection.OPEN       = 2;

@@ -77,7 +77,13 @@ WebSocketConnection = function() {
 			return false;
 		}
 	
-		provider.send(data);
+		try {
+			provider.send(data);
+		} catch (error) {
+			this.onError(error);
+			
+			return false;
+		}
 		
 		return true;
 	}
@@ -106,6 +112,7 @@ WebSocketConnection = function() {
 		) {
 			// break if first time is not successful
 			success = self.send(packetQueue.shift());
+			// @todo insert it with the same index if there is no success			
 		}
 	}
 	
@@ -153,6 +160,11 @@ WebSocketConnection = function() {
 		provider.onclose   = onProviderClose;
 		
 		provider.onerror   = self.onError;
+		
+		// specially for custom providers
+		if ('init' in provider) {
+			provider.init();
+		}
 		
 		// firing onReady event
 		self.onReady();

@@ -9,6 +9,7 @@ if ('undefined' == typeof(console)) {
 
 /**
  * WebSocket connection object
+ *
  * You can set the settings via constructor argument
  *
  * var ws = new WebSocketConnection( {
@@ -31,9 +32,10 @@ if ('undefined' == typeof(console)) {
  *                                              object methods:
  *
  * if (ws.isConnected()) {                      - returns true if connection to server is opened
- *   ws.send(somedata);                         - send somedata to server
+ *   ws.send(somedata);                         - send [somedata] to server
  *   ws.close();                                - close the connection
  * }
+ *
  */
 WebSocketConnection = function() {
 	
@@ -44,11 +46,11 @@ WebSocketConnection = function() {
 // Public event handlers
 // ---------------------------------------------------------	
 
-	this.onReady        = function() { };
-	this.onError        = function(error) { };
+	this.onReady        = function()        { };
+	this.onError        = function(error)   { };
 	this.onMessage      = function(message) { };
-	this.onConnected    = function() { };
-	this.onDisconnected = function() { };
+	this.onConnected    = function()        { };
+	this.onDisconnected = function()        { };
 	
 // ---------------------------------------------------------
 // Public methods
@@ -198,14 +200,14 @@ WebSocketConnection = function() {
 		WebSocketProvider.prototype.CLOSED     = 2;
 		
 		// event handlers
-		WebSocketProvider.prototype.onopen    = function() {};
-		WebSocketProvider.prototype.onmessage = function() {};
-		WebSocketProvider.prototype.onclose   = function() {};
-		WebSocketProvider.prototype.onerror   = function() {};
+		WebSocketProvider.prototype.onopen    = function() { };
+		WebSocketProvider.prototype.onmessage = function() { };
+		WebSocketProvider.prototype.onclose   = function() { };
+		WebSocketProvider.prototype.onerror   = function() { };
 
 		// providers have to override these methods:
-		WebSocketProvider.prototype.close     = function() {};
-		WebSocketProvider.prototype.send      = function(data) {};
+		WebSocketProvider.prototype.close     = function()     { };
+		WebSocketProvider.prototype.send      = function(data) { };
 	}
 	
 	// @todo check other providers

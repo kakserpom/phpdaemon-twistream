@@ -40,7 +40,9 @@
 				console.dir(error);
 			},
 			onMessage: function(msg) {
-				console.dir(msg);
+				var data = $.evalJSON(msg.data);
+			
+				$('#temp').html(data.tweet.text);
 			}
 		});
 	}

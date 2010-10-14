@@ -10,6 +10,33 @@
 		$('#top').css( {
 			opacity: 0.7
 		} );
+
+		var addTweet = function(tweetObj) {
+			console.dir(tweetObj);
+
+			var txt = tweetObj.tweet.text;
+
+			// preparing nicks
+			txt = txt.replace(
+				/(^|\s)@(\w+)/g,
+				'$1<a class="nick" href="http://twitter.com/#!/$2">@$2</a>'
+			);
+
+			// preparing hashtags
+			txt = txt.replace(
+				/(^|\s)#(\w+)/g, 
+				'$1<a class="hash" href="http://search.twitter.com/search?q=%23$2">#$2</a>'
+			);
+
+			var tweet = $('<div></div>')
+				.addClass('tweet')
+				.html(txt)
+				.prependTo('#temp');
+
+			$('<img></img>')
+				.attr('src', tweetObj.tweet.user.profile_image_url)
+				.prependTo(tweet);
+		}
 		
 		var sendPacket = function(data) {
 			var packet = $.toJSON(data);
@@ -41,8 +68,7 @@
 			},
 			onMessage: function(msg) {
 				var data = $.evalJSON(msg.data);
-			
-				$('#temp').html(data.tweet.text);
+				addTweet(data);
 			}
 		});
 	}

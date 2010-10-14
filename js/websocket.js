@@ -41,6 +41,7 @@ WebSocketConnection = function() {
 	
 	var provider = null;	
 	var self = this;
+	var packetQueue = [];
 	
 // ---------------------------------------------------------
 // Public event handlers
@@ -67,7 +68,18 @@ WebSocketConnection = function() {
 	 * Send data to the server
 	 */
 	this.send = function(data) {
+		// checking the connection
+		if (!this.isConnected()) {
+			// queueing data item to send it later 
+			// @todo add option to disable queueing in settings
+			packetQueue.push(data);
+			
+			return false;
+		}
+	
 		provider.send(data);
+		
+		return true;
 	}
 	
 	this.isConnected = function() {
@@ -84,6 +96,17 @@ WebSocketConnection = function() {
 	// connection is opened
 	var onProviderOpen = function() {
 		self.onConnected();
+		
+		// check for queue to send it
+		var success = true;
+		
+		while (
+			success
+			&& packetQueue.length > 0
+		) {
+			// break if first time is not successful
+			success = self.send(packetQueue.shift());
+		}
 	}
 	
 	// connection is closed

@@ -21,11 +21,11 @@ if ('undefined' == typeof(console)) {
  *   },
  *                                              events handlers (all handlers can be assigned to object manually):
  *
- *   onReady      = function() { },             - connection object is ready for use
- *   onConnected  = function() { },             - connected to server
- *   onDisconcted = function() { },             - disconnected
- *   onMessage    = function(message) { },      - new message from server received
- *   onError      = function(error) { },        - error
+ *   onReady        = function() { },           - connection object is ready for use
+ *   onConnected    = function() { },           - connected to server
+ *   onDisconnected = function() { },           - disconnected
+ *   onMessage      = function(message) { },    - new message from server received
+ *   onError        = function(error) { },      - error
  * } );
  *
  *                                              object methods:

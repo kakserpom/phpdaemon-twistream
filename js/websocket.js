@@ -59,7 +59,11 @@ WebSocketConnection = function() {
 	}
 	
 	this.connected = function() {
-		return state === WebSocketConnection.OPEN;
+		return (
+			WebSocketConnection.OPEN === state
+			// WebSocket.OPEN = 1
+			&& 1 === provider.readyState
+		);
 	}
 	
 // ---------------------------------------------------------
@@ -159,7 +163,7 @@ WebSocketConnection = function() {
 		&& 'websocket' in settings['url']
 	) {
 		// native WebSocket found
-//		WebSocketProvider = WebSocket;
+		WebSocketProvider = WebSocket;
 		result = initProvider(settings['url']['websocket']);
 	}
 	

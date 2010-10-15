@@ -11,6 +11,7 @@
 	</head>
 
 	<body>
+		<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 		<script src="js/twistream.js"></script>
 
 		<header id="top">
@@ -19,16 +20,17 @@
 			<input type="text" />
 		</header>
 
-		<div id="temp" style="margin-top: 3em">
-<!--<div class="tweet"><a class="nick" href="http://twitter.com/#!/tema">@Tema</a> <a class="hash" href="http://search.twitter.com/search?q=%23jquery">#jquery</a> <a class="hash" href="http://search.twitter.com/search?q=%23job">#job</a> - Experienced PHP and JS programmer for ongoing development and m... ($14.5/hr) - http://donanza.com/t/2155770 <a class="hash" href="http://search.twitter.com/search?q=%23jobs">#jobs</a></div>!-->
-		</div>
-		
+		<div id="maps"></div>
+
+		<div id="tweets"></div>
+
 		<script>
 			(function($) {
 				$.twistream( {
 					url: {
 						websocket: 'ws://' + document.domain + ':8047/TwiStream'
-					}
+					},
+					map: '#maps'
 				} );
 			})(jQuery);
 		</script>

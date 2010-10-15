@@ -1,15 +1,33 @@
 (function($) {
 	
 	$.twistream = function() {
-		this.keyword = 'php';
-	
 		var settings = arguments[0] || { };
 		
 		var self = this;
-		
-		$('#top').css( {
-			opacity: 0.7
-		} );
+		var map = null;
+		var topElement = $('#top');	
+	
+		topElement.css( { opacity: 0.8 } );
+		$('#tweets').css( { opacity: 0.8 } );
+
+		$('input', topElement)
+			.mouseover( function() {
+				topElement.animate({opacity: 1});
+			} )
+			.mouseout( function() {
+				topElement.animate({opacity: 0.8});
+			} );
+
+//		if ('map' in settings) {
+			map = new google.maps.Map(
+				document.getElementById('maps'), {
+					zoom: 5,
+					center: new google.maps.LatLng(-34.397, 150.644),
+					disableDefaultUI: true,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				}				
+			);
+//		}
 
 		var addTweet = function(tweetObj) {
 			var txt = tweetObj.tweet.text;
@@ -29,24 +47,15 @@
 			var tweet = $('<div></div>')
 				.addClass('tweet')
 				.html(txt)
-				.css( {
-					position: 'absolute',
-					top: (Math.floor(Math.random() * window.innerHeight + 1)) + 'px',
-					left: (window.innerWidth + 200) + 'px',
-					opacity: 0.8
-				} );
+				.hide();
 
 			$('<img></img>')
 				.attr('src', tweetObj.tweet.user.profile_image_url)
 				.prependTo(tweet);
 
 			tweet
-				.appendTo('body')
-				.animate( {
-					left: '-400px'
-				}, 15000, 'linear', function() {
-					$(this).remove();
-				});
+				.prependTo('#tweets')
+				.slideDown('fast', 'linear');
 		}
 		
 		var sendPacket = function(data) {
@@ -71,7 +80,7 @@
 			
 			onConnected: function() {
 				subscribe({
-					track: 'php'
+					track: 'google'
 				});	
 			},
 			onError: function(error) {

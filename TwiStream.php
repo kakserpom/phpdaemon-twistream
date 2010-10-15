@@ -67,8 +67,20 @@ class TwiStreamRequest extends Request {
 	public $stream;
 	public $buf = '';
 	public $sessions = array();
+
+	private $lastTwit = 0;
 	
-	public function onTweet($o) {		
+	public function onTweet($o) {
+		$tmp = microtime(true);
+
+		if ($tmp - $this->lastTwit < 0.3) {
+			// too frequent tweets are bad
+			// maybe there is another solution?
+			return;
+		}
+
+		$this->lastTwit = $tmp;
+
 		$str = json_encode(array('tweet' => $o, 'ts' => microtime(TRUE)));
 
 		foreach ($this->sessions as $sessId => $v) {

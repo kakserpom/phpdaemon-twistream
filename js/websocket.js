@@ -47,11 +47,11 @@ WebSocketConnection = function() {
 // Public event handlers
 // ---------------------------------------------------------	
 
-	this.onReady        = function()        { };
-	this.onError        = function(error)   { };
-	this.onMessage      = function(message) { };
-	this.onConnected    = function()        { };
-	this.onDisconnected = function()        { };
+	self.onReady        = function()        { };
+	self.onError        = function(error)   { };
+	self.onMessage      = function(message) { };
+	self.onConnected    = function()        { };
+	self.onDisconnected = function()        { };
 	
 // ---------------------------------------------------------
 // Public methods
@@ -60,16 +60,16 @@ WebSocketConnection = function() {
 	/**
 	 * Close the connection
 	 */
-	this.close = function() {
+	self.close = function() {
 		provider.close();
 	}
 	
 	/**
 	 * Send data to the server
 	 */
-	this.send = function(data) {
+	self.send = function(data) {
 		// checking the connection
-		if (!this.isConnected()) {
+		if (!self.isConnected()) {
 			// queueing data item to send it later 
 			// @todo add option to disable queueing in settings
 			packetQueue.push(data);
@@ -80,7 +80,7 @@ WebSocketConnection = function() {
 		try {
 			provider.send(data);
 		} catch (error) {
-			this.onError(error);
+			self.onError(error);
 			
 			return false;
 		}
@@ -88,7 +88,7 @@ WebSocketConnection = function() {
 		return true;
 	}
 	
-	this.isConnected = function() {
+	self.isConnected = function() {
 		return (
 			provider
 			&& provider.OPEN === provider.readyState
@@ -223,10 +223,12 @@ WebSocketConnection = function() {
 	
 	if (!result) {
 		// Building WebSocketProvider skeleton similar to WebSocket
-		WebSocketProvider = function(url) { 
-			this.URL = url;
-			this.bufferedAmount = 0;
-			this.readyState = 2;
+		WebSocketProvider = function(url) {
+			var self = this;
+			
+			self.URL = url;
+			self.bufferedAmount = 0;
+			self.readyState = 2;
 		};
 		
 		// default constants

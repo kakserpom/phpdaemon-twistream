@@ -4,11 +4,37 @@
 		var settings = arguments[0] || { };
 		
 		var self = this;
+		
 		var map = null;
-		var topElement = $('#top');	
+		
+		var logtimer = null;
+		
+		var topElement = $('#top');
+		var logger = $('#logger');
 	
 		topElement.css( { opacity: 0.8 } );
 		$('#tweets').css( { opacity: 0.8 } );
+		
+		var _log = function(message) {
+			logger
+				.html(message)
+				.fadeIn('slow');
+				
+			setTimeout(function() {
+				logger.fadeOut('slow');
+			}, 2000)
+		}
+		
+		var log = function(message) {
+			if (null != logtimer) {
+				clearTimeout(logtimer);
+				logger.fadeOut('fast', function() {
+					_log(message);
+				} );
+			} else {
+				_log(message);	
+			}
+		}
 
 		$('input', topElement)
 			.mouseover( function() {
@@ -21,7 +47,7 @@
 //		if ('map' in settings) {
 			map = new google.maps.Map(
 				document.getElementById('maps'), {
-					zoom: 5,
+					zoom: 10,
 					center: new google.maps.LatLng(-34.397, 150.644),
 					disableDefaultUI: true,
 					mapTypeId: google.maps.MapTypeId.ROADMAP

@@ -25,8 +25,18 @@ h1 {
 	font-size: 16pt;
 }
 
-header h1 {
+h2 {
+	font-size: 12pt;
+}
+
+header h1, header h2 {
 	float: left;
+}
+
+#logger {
+	padding-top: 0.4em;
+	padding-left: 2em;
+	color: silver;
 }
 
 header input {

@@ -55,6 +55,24 @@
 			);
 //		}
 
+		if ('geolocation' in navigator) {
+			navigator.geolocation.getCurrentPosition( function(position) {
+				if (
+					'coords' in position
+					&& 'latitude' in position.coords
+				) {
+					log('Initial coordinates changed');
+					
+					map.setCenter(
+						new google.maps.LatLng(
+							position.coords.latitude,
+							position.coords.longitude
+						)
+					);
+				}
+			} );
+		}
+
 		var addTweet = function(tweetObj) {
 			var txt = tweetObj.tweet.text;
 

@@ -48,11 +48,25 @@
 				topElement.animate({opacity: 0.8});
 			} );
 
+		var mapCenter = new google.maps.LatLng(-34.397, 150.644);
+		var mapZoom   = 10;
+
+		// @todo don't ask user for geo if settings are found in localStorage
+
+		if ('localStorage' in window) {
+			mapZoom = parseInt(localStorage.getItem('map_zoom') || mapZoom);
+
+			mapCenter = new google.maps.LatLng(
+				parseFloat(localStorage.getItem('map_lng') || mapCenter.lng()),
+				parseFloat(localStorage.getItem('map_lat') || mapCenter.lat())
+			);
+		}
+
 //		if ('map' in settings) {
 			map = new google.maps.Map(
 				document.getElementById('maps'), {
-					zoom: 10,
-					center: new google.maps.LatLng(-34.397, 150.644),
+					zoom: mapZoom,
+					center: mapCenter,
 					disableDefaultUI: true,
 					mapTypeId: google.maps.MapTypeId.ROADMAP
 				}
@@ -87,23 +101,26 @@
 			// preparing nicks
 			txt = txt.replace(
 				/(^|\s)@(\w+)/g,
-				'$1<a class="nick" href="http://twitter.com/#!/$2">@$2</a>'
+				'$1<a class="nick" target="_blank" href="http://twitter.com/#!/$2">@$2</a>'
 			);
 
 			// preparing hashtags
 			txt = txt.replace(
 				/(^|\s)#(\w+)/g,
-				'$1<a class="hash" href="http://search.twitter.com/search?q=%23$2">#$2</a>'
+				'$1<a class="hash" target="_blank" href="http://search.twitter.com/search?q=%23$2">#$2</a>'
 			);
 
 			var tweet = $('<div></div>')
 				.addClass('tweet')
-				.html(txt)
 				.hide();
 
 			$('<img></img>')
 				.attr('src', tweetObj.tweet.user.profile_image_url)
 				.prependTo(tweet);
+
+			$('<p></p>')
+				.html(txt)
+				.appendTo(tweet);
 
 			tweet
 				.prependTo('#tweets')
@@ -175,12 +192,27 @@
 			pchangedtimer = setTimeout(changeParams, 2000);
 		}
 
-		map.bounds_changed = function() {
+		var mapCoordsChangedHandler = function() {
+			if (
+				'localStorage' in window
+				&& null != map
+			) {
+				var mapCenter = map.getCenter();
+
+				localStorage.setItem('map_lat', mapCenter.lat());
+				localStorage.setItem('map_lng', mapCenter.lng());
+				localStorage.setItem('map_zoom', map.getZoom());
+			}
+
 			paramsChangedHandler();
 		}
 
+		map.bounds_changed = function() {
+			mapCoordsChangedHandler();
+		}
+
 		map.center_changed = function() {
-			paramsChangedHandler();
+			mapCoordsChangedHandler();
 		}
 
 		if ('geolocation' in navigator) {

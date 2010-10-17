@@ -86,7 +86,7 @@ header input {
 }
 
 .tweet img {
-	display: inline;
+	float: left;
 	margin-right: 0.5em;
 	width: 48px;
 	height: 48px;

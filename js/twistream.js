@@ -262,8 +262,6 @@
 					addTweet(data);
 				}
 			} );
-
-			connection.send(packet);
 		}
 
 		var paramsChangedHandler = function() {

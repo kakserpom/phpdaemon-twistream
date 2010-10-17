@@ -85,9 +85,12 @@ header input {
 	border-radius: 5px;
 }
 
-.tweet img {
+.tweet .avatar {
 	float: left;
 	margin-right: 0.5em;
+}
+
+.tweet img {
 	width: 48px;
 	height: 48px;
 }

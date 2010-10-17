@@ -178,13 +178,25 @@
 				'$1<a class="hash" target="_blank" href="http://search.twitter.com/search?q=%23$2">#$2</a>'
 			);
 
+			console.dir(tweetObj.tweet.user);
+
 			var tweet = $('<div></div>')
 				.addClass('tweet')
 				.hide();
 
-			$('<img></img>')
+			var avatar = $('<a></a>')
+				.addClass('avatar')
+				.attr( {
+					'href': 'http://twitter.com/#!/' + tweetObj.tweet.user.screen_name,
+					'target': '_blank',
+					'title': tweetObj.tweet.user.screen_name + ' (' +
+						tweetObj.tweet.user.name + ')'
+				} )
+				.appendTo(tweet);
+
+			$('<img />')
 				.attr('src', tweetObj.tweet.user.profile_image_url)
-				.prependTo(tweet);
+				.appendTo(avatar);
 
 			$('<p></p>')
 				.html(txt)

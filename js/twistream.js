@@ -156,7 +156,8 @@
 						markerLat,
 						markerLng
 					),
-					map: map
+					map: map,
+					icon: 'img/marker.png'
 				} );
 			} else {
 				var marker = null;

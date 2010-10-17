@@ -7,7 +7,7 @@
  */
 class TwiStream extends AppInstance {
 
-	public function onReady() {	 
+	public function onReady() {
 		$appInstance = $this;
 
 		if ($this->WS = Daemon::$appResolver->getInstanceByAppName('WebSocketServer')) {
@@ -21,10 +21,10 @@ class TwiStream extends AppInstance {
 
 }
 
-class TwiStreamWebSocketSession extends WebSocketRoute { 
-	
+class TwiStreamWebSocketSession extends WebSocketRoute {
+
 	private $requests = array();
-	
+
 	/**
 	 * Called when new frame received.
 	 * @param string Frame's contents.
@@ -35,7 +35,7 @@ class TwiStreamWebSocketSession extends WebSocketRoute {
 		$o = json_decode($data, true);
 
 		if (
-			!isset($o['cmd']) 
+			!isset($o['cmd'])
 			|| !is_string($o['cmd'])
 		) {
 			return;
@@ -50,16 +50,16 @@ class TwiStreamWebSocketSession extends WebSocketRoute {
 		}
 	}
 
-	public function onFinish() {		
+	public function onFinish() {
 		while ($id = array_pop($this->requests)) {
 			if (!isset(Daemon::$worker->queue[$id])) {
 				continue;
 			}
 
 			unset(Daemon::$worker->queue[$id]->sessions[$this->client->connId]);
-		}		
+		}
 	}
-	
+
 }
 
 class TwiStreamRequest extends Request {
@@ -69,7 +69,7 @@ class TwiStreamRequest extends Request {
 	public $sessions = array();
 
 	private $lastTwit = 0;
-	
+
 	public function onTweet($o) {
 		$tmp = microtime(true);
 
@@ -127,7 +127,7 @@ class TwiStreamRequest extends Request {
 				"Connection: close\r\n" .
 				"Content-type: application/x-www-form-urlencoded\r\n" .
 				"Authorization: basic " . base64_encode(
-					$this->appInstance->config->user->value . ':' . 
+					$this->appInstance->config->user->value . ':' .
 					$this->appInstance->config->password->value
 				)."\r\n" .
 				"Host: status.twitter.com\r\n" .
@@ -170,5 +170,5 @@ class TwiStreamRequest extends Request {
 			$this->sleep(0.1);
 		}
 	}
-	
+
 }

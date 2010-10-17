@@ -15,7 +15,7 @@ header {
 	position: fixed;
 	top: 0px;
 	width: 100%;
-	padding: 0.5em;	
+	padding: 0.5em;
 	background-color: #2a2b2f;
 	border-bottom: 1px solid grey;
 	z-index: 666;
@@ -31,6 +31,10 @@ h2 {
 
 header h1, header h2 {
 	float: left;
+}
+
+header h1 {
+	padding-left: 0.5em;
 }
 
 #logger {

@@ -1,30 +1,34 @@
 (function($) {
-	
+
 	$.twistream = function() {
 		var settings = arguments[0] || { };
-		
+
 		var self = this;
-		
+
 		var map = null;
-		
+
+		var connection = null;
+		var tweets = [];
+
 		var logtimer = null;
-		
+		var pchangedtimer = null;
+
 		var topElement = $('#top');
 		var logger = $('#logger');
-	
+
 		topElement.css( { opacity: 0.8 } );
-		$('#tweets').css( { opacity: 0.8 } );
-		
+		$('#tweets').css( { opacity: 0.9 } );
+
 		var _log = function(message) {
 			logger
 				.html(message)
 				.fadeIn('slow');
-				
-			setTimeout(function() {
+
+			logtimer = setTimeout(function() {
 				logger.fadeOut('slow');
 			}, 2000)
 		}
-		
+
 		var log = function(message) {
 			if (null != logtimer) {
 				clearTimeout(logtimer);
@@ -32,7 +36,7 @@
 					_log(message);
 				} );
 			} else {
-				_log(message);	
+				_log(message);
 			}
 		}
 
@@ -51,29 +55,33 @@
 					center: new google.maps.LatLng(-34.397, 150.644),
 					disableDefaultUI: true,
 					mapTypeId: google.maps.MapTypeId.ROADMAP
-				}				
+				}
 			);
 //		}
 
-		if ('geolocation' in navigator) {
-			navigator.geolocation.getCurrentPosition( function(position) {
-				if (
-					'coords' in position
-					&& 'latitude' in position.coords
-				) {
-					log('Initial coordinates changed');
-					
-					map.setCenter(
-						new google.maps.LatLng(
-							position.coords.latitude,
-							position.coords.longitude
-						)
-					);
-				}
-			} );
+		var checkVisibleTweets = function() {
+			if (tweets.length === 0) {
+				// not impossible O.o
+				return;
+			}
+
+			var el = tweets[0].element;
+
+			if (el[0].offsetTop > window.innerHeight * 2) {
+				el.remove();
+				tweets.shift();
+			}
 		}
 
 		var addTweet = function(tweetObj) {
+			if (
+				null === tweetObj
+				|| !('tweet' in tweetObj)
+				|| null === tweetObj.tweet
+			) {
+				return;
+			}
+
 			var txt = tweetObj.tweet.text;
 
 			// preparing nicks
@@ -84,7 +92,7 @@
 
 			// preparing hashtags
 			txt = txt.replace(
-				/(^|\s)#(\w+)/g, 
+				/(^|\s)#(\w+)/g,
 				'$1<a class="hash" href="http://search.twitter.com/search?q=%23$2">#$2</a>'
 			);
 
@@ -100,41 +108,102 @@
 			tweet
 				.prependTo('#tweets')
 				.slideDown('fast', 'linear');
-		}
-		
-		var sendPacket = function(data) {
-			var packet = $.toJSON(data);
-			
-			try {
-				connection.send(packet);
-			} catch (error) {
-				console.error(error.message);
-			}
-		}
-		
-		var subscribe = function(attrs) {
-			sendPacket({
-				'cmd'   : 'subscribe',
-				'attrs' : attrs
+
+			tweets.push({
+				element: tweet
 			});
+
+			checkVisibleTweets();
 		}
-		
-		var connection = new WebSocketConnection({
-			url: settings['url'],
-			
-			onConnected: function() {
-				subscribe({
-					track: 'google'
-				});	
-			},
-			onError: function(error) {
-				console.dir(error);
-			},
-			onMessage: function(msg) {
-				var data = $.evalJSON(msg.data);
-				addTweet(data);
+
+		var changeParams = function() {
+			log('Applying new stream subscription params');
+
+			if (null != connection) {
+				if (connection.connected()) {
+					connection.close();
+				}
 			}
-		});
+
+			var requestAttrs = {} /*{
+				track: 'google'
+			};*/;
+
+			var mapBounds = map.getBounds();
+			if (null != mapBounds) {
+				var mapBoundsNE = mapBounds.getNorthEast();
+				var mapBoundsSW = mapBounds.getSouthWest();
+
+				requestAttrs['locations'] =
+					mapBoundsSW.lng() + ',' + mapBoundsSW.lat() + ',' +
+					mapBoundsNE.lng() + ',' + mapBoundsNE.lat();
+			}
+
+			var packet = $.toJSON( {
+				'cmd'   : 'subscribe',
+				'attrs' : requestAttrs
+			} );
+
+			connection = new WebSocketConnection( {
+				url: settings['url'],
+
+				onConnected: function() {
+					console.dir(packet);
+					this.send(packet);
+				},
+
+				onError: function() {
+					log('Error. Trying to reconnect in 5 seconds.');
+					setTimeout(changeParams, 5000);
+				},
+
+				onMessage: function(msg) {
+					var data = $.evalJSON(msg.data);
+					//console.dir(data);
+					addTweet(data);
+				}
+			} );
+
+			connection.send(packet);
+		}
+
+		var paramsChangedHandler = function() {
+			if (null != pchangedtimer) {
+				clearTimeout(pchangedtimer);
+			}
+
+			pchangedtimer = setTimeout(changeParams, 2000);
+		}
+
+		map.bounds_changed = function() {
+			paramsChangedHandler();
+		}
+
+		map.center_changed = function() {
+			paramsChangedHandler();
+		}
+
+		if ('geolocation' in navigator) {
+			navigator.geolocation.getCurrentPosition( function(position) {
+				if (
+					'coords' in position
+					&& 'latitude' in position.coords
+				) {
+					//log('Initial coordinates changed');
+
+					map.setCenter(
+						new google.maps.LatLng(
+							position.coords.latitude,
+							position.coords.longitude
+						)
+					);
+				}
+
+				//changeParams();
+			} );
+		} else {
+			changeParams();
+		}
 	}
-	
+
 })(jQuery);

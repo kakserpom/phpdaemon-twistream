@@ -31,101 +31,101 @@ if ('undefined' == typeof(console)) {
  *
  *                                              object methods:
  *
- * if (ws.isConnected()) {                      - returns true if connection to server is opened
+ * if (ws.connected()) {                      - returns true if connection to server is opened
  *   ws.send(somedata);                         - send [somedata] to server
  *   ws.close();                                - close the connection
  * }
  *
  */
 WebSocketConnection = function() {
-	
-	var provider = null;	
+
+	var provider = null;
 	var self = this;
 	var packetQueue = [];
-	
+
 // ---------------------------------------------------------
 // Public event handlers
-// ---------------------------------------------------------	
+// ---------------------------------------------------------
 
 	self.onReady        = function()        { };
 	self.onError        = function(error)   { };
 	self.onMessage      = function(message) { };
 	self.onConnected    = function()        { };
 	self.onDisconnected = function()        { };
-	
+
 // ---------------------------------------------------------
 // Public methods
-// ---------------------------------------------------------	
-	
+// ---------------------------------------------------------
+
 	/**
 	 * Close the connection
 	 */
 	self.close = function() {
 		provider.close();
 	}
-	
+
 	/**
 	 * Send data to the server
 	 */
 	self.send = function(data) {
 		// checking the connection
-		if (!self.isConnected()) {
-			// queueing data item to send it later 
+		if (!self.connected()) {
+			// queueing data item to send it later
 			// @todo add option to disable queueing in settings
 			packetQueue.push(data);
-			
+
 			return false;
 		}
-	
+
 		try {
 			provider.send(data);
 		} catch (error) {
 			self.onError(error);
-			
+
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	self.isConnected = function() {
+
+	self.connected = function() {
 		return (
 			provider
 			&& provider.OPEN === provider.readyState
 		);
 	}
-	
+
 // ---------------------------------------------------------
 // Provider event handlers
-// ---------------------------------------------------------	
+// ---------------------------------------------------------
 
 	// connection is opened
 	var onProviderOpen = function() {
 		self.onConnected();
-		
+
 		// check for queue to send it
 		var success = true;
-		
+
 		while (
 			success
 			&& packetQueue.length > 0
 		) {
 			// break if first time is not successful
 			success = self.send(packetQueue.shift());
-			// @todo insert it with the same index if there is no success			
+			// @todo insert it with the same index if there is no success
 		}
 	}
-	
+
 	// connection is closed
 	var onProviderClose = function() {
 		self.onDisconnected();
 	}
-	
+
 	// new message received
 	var onProviderMessage = function(message) {
 		self.onMessage(message);
 	}
-	
+
 	// error ;(
 	var onProviderError = function(error) {
 		self.onError(error);
@@ -133,8 +133,8 @@ WebSocketConnection = function() {
 
 // ---------------------------------------------------------
 // Init
-// ---------------------------------------------------------		
-	
+// ---------------------------------------------------------
+
 	var initProvider = function(url) {
 		if ('undefined' === typeof(WebSocketProvider)) {
 			self.onError({
@@ -158,14 +158,14 @@ WebSocketConnection = function() {
 		provider.onopen    = onProviderOpen;
 		provider.onmessage = onProviderMessage;
 		provider.onclose   = onProviderClose;
-		
+
 		provider.onerror   = self.onError;
-		
+
 		// specially for custom providers
 		if ('init' in provider) {
 			provider.init();
 		}
-		
+
 		// firing onReady event
 		self.onReady();
 
@@ -175,20 +175,20 @@ WebSocketConnection = function() {
 // ---------------------------------------------------------
 // Check settings
 // ---------------------------------------------------------
-	
-	var settings = arguments[0] || { };	
-	
+
+	var settings = arguments[0] || { };
+
 	// Checking the settings
 	if (!('url' in settings)) {
 		console.error('url is not defined in settings');
 		return false;
 	}
-	
+
 	// @todo check for string in 'url' value to assign every provider with it
-		
+
 	// checking jspath, default is "/js/"
 	settings['jspath'] = settings['jspath'] || '/js/';
-	
+
 	// Overriding event handlers from settings
 	// @todo maybe there is a better way to do this?
 	for (var key in settings) {
@@ -206,10 +206,10 @@ WebSocketConnection = function() {
 
 // ---------------------------------------------------------
 // Let's go
-// ---------------------------------------------------------	
-	
+// ---------------------------------------------------------
+
 	var result = false;
-	
+
 	// Check the connection type and initialize provider
 	if (
 		'WebSocket' in window
@@ -220,22 +220,22 @@ WebSocketConnection = function() {
 		WebSocketProvider = WebSocket;
 		result = initProvider(settings['url']['websocket']);
 	}
-	
+
 	if (!result) {
 		// Building WebSocketProvider skeleton similar to WebSocket
 		WebSocketProvider = function(url) {
 			var self = this;
-			
+
 			self.URL = url;
 			self.bufferedAmount = 0;
 			self.readyState = 2;
 		};
-		
+
 		// default constants
 		WebSocketProvider.prototype.CONNECTING = 0;
 		WebSocketProvider.prototype.OPEN       = 1;
 		WebSocketProvider.prototype.CLOSED     = 2;
-		
+
 		// event handlers
 		WebSocketProvider.prototype.onopen    = function() { };
 		WebSocketProvider.prototype.onmessage = function() { };
@@ -246,7 +246,7 @@ WebSocketConnection = function() {
 		WebSocketProvider.prototype.close     = function()     { };
 		WebSocketProvider.prototype.send      = function(data) { };
 	}
-	
+
 	// @todo check other providers
 
 	return result;
@@ -257,12 +257,12 @@ WebSocketConnection = function() {
  */
 function WebSocketEncodeData(data) {
 	var query = [];
-	
+
 	if (data instanceof Object) {
 		for (var k in data) {
 			query.push(encodeURIComponent(k) + '=' + encodeURIComponent(data[k]));
 		}
-		
+
 		return query.join('&');
 	} else {
 		return encodeURIComponent(data);

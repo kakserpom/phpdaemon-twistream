@@ -94,14 +94,14 @@ class TwiStreamRequest extends Request {
 	 */
 	private function initStream() {
 		$this->stream = new AsyncStream('tcpstream://stream.twitter.com:80');
-		$body = http_build_query($this->attrs);
+		$body = http_build_query($this->attrs, '', '&amp;');
 
 		$this->stream->
 			onReadData(
-				function($stream, $data) {			
+				function($stream, $data) {
 					$buf =& $stream->request->buf;
 					$buf .= $data;
-					
+
 					if (!isset($stream->headersPassed)) {
 						if (($p = strpos($buf, "\r\n\r\n")) !== false) {
 							$buf = substr($buf, $p + 4);

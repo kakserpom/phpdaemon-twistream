@@ -106,13 +106,17 @@
 			var markerLat = null;
 			var markerLng = null;
 
-			if (null !== tweetObj.tweet.geo) {
+			if (
+				'geo' in tweetObj.tweet
+				&& null !== tweetObj.tweet.geo
+			) {
 				markerLat = tweetObj.tweet.geo.coordinates[0];
 				markerLng = tweetObj.tweet.geo.coordinates[1];
-
-				console.info('geo is set');
 			} else
-			if (null !== tweetObj.tweet.place) {
+			if (
+				'place' in tweetObj.tweet
+				&& null !== tweetObj.tweet.place
+			) {
 				var coord = tweetObj.tweet.place.bounding_box.coordinates.shift();
 
 				if (coord) {
@@ -135,13 +139,11 @@
 							break;
 						}
 					}
-
-					console.info('place is set');
 				} else {
-					console.info('coord not found');
+					console.info('coords not found in tweet object');
 				}
 			} else {
-				console.info('nothing is set');
+				console.info('nothing is set in tweet coords');
 				console.dir(tweetObj.tweet);
 			}
 
@@ -149,8 +151,6 @@
 				null != markerLat
 				&& null != markerLng
 			) {
-				console.dir( {lat: markerLat, lng: markerLng} );
-
 				var marker = new google.maps.Marker( {
 					position: new google.maps.LatLng(
 						markerLat,
@@ -178,8 +178,6 @@
 				/(^|\s)#(\w+)/g,
 				'$1<a class="hash" target="_blank" href="http://search.twitter.com/search?q=%23$2">#$2</a>'
 			);
-
-			console.dir(tweetObj.tweet.user);
 
 			var tweet = $('<div></div>')
 				.addClass('tweet')
@@ -247,8 +245,15 @@
 				url: settings['url'],
 
 				onConnected: function() {
-					console.dir(packet);
-					this.send(packet);
+					if (
+						'makeup' in settings
+						&& settings.makeup
+					) { 
+						// 'tis a temporary block just for makeup
+					}
+					else {
+						this.send(packet);
+					}
 				},
 
 				onError: function() {
@@ -315,6 +320,27 @@
 			} );
 		} else {
 			changeParams();
+		}
+
+		if (
+			'makeup' in settings
+			&& settings.makeup
+		) {
+			addTweet( {
+				tweet: {
+					text: 'Testing @silentroach tweet with many words and lines O.o great for makeup fixing and something to test. Don\'t know where to found enough words to make tweet bigger in height, so just test some links http://yfrog.com/3r7mzqj and a #hashtag and #hashtag2.',
+					user: {
+						screen_name: 'silentroach',
+						profile_image_url: 'http://a2.twimg.com/profile_images/24736482/a_a09b53a_normal.jpg'
+					},
+					geo: {
+						coordinates: [
+							55.6109221,
+							37.6985258
+						]
+					}
+				}
+			} );
 		}
 	}
 

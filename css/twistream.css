@@ -69,6 +69,7 @@ header input {
 	right: 0.6em;
 	width: 30%;
 	padding: 0.5em;
+	border-left: 1px dotted white;
 }
 
 .tweet {

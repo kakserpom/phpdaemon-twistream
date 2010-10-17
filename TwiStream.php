@@ -1,5 +1,11 @@
 <?php
 
+// @todo 20,000 requests per hour for whitelisted ips
+//       form to request whitelisting
+//       http://twitter.com/help/request_whitelisting
+
+// @todo PHP Warning:  stream_socket_client(): unable to connect to tcp://stream.twitter.com:80 (Connection timed out) in /home/silent/Projects/phpdaemon/lib/AsyncStream.class.php on line 76
+
 /**
  * @package TwiStream
  *

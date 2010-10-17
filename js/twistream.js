@@ -79,11 +79,16 @@
 				return;
 			}
 
-			var el = tweets[0].element;
+			var el = tweets[0].element[0];
 
-			if (el[0].offsetTop > window.innerHeight * 2) {
-				el.remove();
-				tweets.shift();
+			if (el.offsetTop > window.innerHeight) {
+				el = tweets.shift();
+
+				el.element.remove();
+
+				if (null != el.marker) {
+					el.marker.setMap(null);
+				}
 			}
 		}
 
@@ -95,6 +100,68 @@
 			) {
 				return;
 			}
+
+			// geo
+
+			var markerLat = null;
+			var markerLng = null;
+
+			if (null !== tweetObj.tweet.geo) {
+				markerLat = tweetObj.tweet.geo.coordinates[0];
+				markerLng = tweetObj.tweet.geo.coordinates[1];
+
+				console.info('geo is set');
+			} else
+			if (null !== tweetObj.tweet.place) {
+				var coord = tweetObj.tweet.place.bounding_box.coordinates.shift();
+
+				if (coord) {
+					while (true) {
+						var poly = coord.shift();
+
+						if (poly) {
+							while (true) {
+								var pcoord = poly.shift();
+
+								if (pcoord) {
+									markerLat = (markerLat + coord[0]) / 2;
+									markerLng = (markerLng + coord[1]) / 2;
+								} else {
+									break;
+								}
+							}
+						} else {
+							break;
+						}
+					}
+
+					console.info('place is set');
+				} else {
+					console.info('coord not found');
+				}
+			} else {
+				console.info('nothing is set');
+				console.dir(tweetObj.tweet);
+			}
+
+			if (
+				null != markerLat
+				&& null != markerLng
+			) {
+				console.dir( {lat: markerLat, lng: markerLng} );
+
+				var marker = new google.maps.Marker( {
+					position: new google.maps.LatLng(
+						markerLat,
+						markerLng
+					),
+					map: map
+				} );
+			} else {
+				var marker = null;
+			}
+
+			// tweet
 
 			var txt = tweetObj.tweet.text;
 
@@ -127,7 +194,8 @@
 				.slideDown('fast', 'linear');
 
 			tweets.push({
-				element: tweet
+				element: tweet,
+				marker: marker
 			});
 
 			checkVisibleTweets();

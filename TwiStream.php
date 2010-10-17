@@ -6,6 +6,8 @@
 
 // @todo PHP Warning:  stream_socket_client(): unable to connect to tcp://stream.twitter.com:80 (Connection timed out) in /home/silent/Projects/phpdaemon/lib/AsyncStream.class.php on line 76
 
+// @todo [PHPD] Bad event call.
+
 /**
  * @package TwiStream
  *

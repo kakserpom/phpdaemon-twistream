@@ -94,6 +94,10 @@ header input {
 .tweet img {
 	width: 48px;
 	height: 48px;
+
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
 }
 
 .tweet a {

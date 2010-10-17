@@ -81,7 +81,7 @@ class TwiStreamRequest extends Request {
 	public function onTweet($o) {
 		$tmp = microtime(true);
 
-		if ($tmp - $this->lastTwit < 0.3) {
+		if ($tmp - $this->lastTwit < 0.2) {
 			// too frequent tweets are bad
 			// maybe there is another solution?
 			return;

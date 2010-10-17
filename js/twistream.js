@@ -120,15 +120,16 @@
 						var poly = coord.shift();
 
 						if (poly) {
-							while (true) {
-								var pcoord = poly.shift();
+							if (null === markerLng) {
+								markerLng = poly[0]
+							} else {
+								markerLng = (markerLng + poly[0]) / 2;
+							}
 
-								if (pcoord) {
-									markerLat = (markerLat + coord[0]) / 2;
-									markerLng = (markerLng + coord[1]) / 2;
-								} else {
-									break;
-								}
+							if (null === markerLat) {
+								markerLat = poly[1];
+							} else {
+								markerLat = (markerLat + poly[1]) / 2;
 							}
 						} else {
 							break;

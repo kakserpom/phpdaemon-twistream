@@ -8,7 +8,9 @@
 		var map = null;
 
 		var connection = null;
+
 		var tweets = [];
+		var markers = [];
 
 		var logtimer = null;
 		var pchangedtimer = null;
@@ -157,7 +159,8 @@
 						markerLng
 					),
 					map: map,
-					icon: 'img/marker.png'
+					title: 'Tweet',
+					icon: 'img/marker.gif'
 				} );
 			} else {
 				var marker = null;
@@ -166,6 +169,20 @@
 			// tweet
 
 			var txt = tweetObj.tweet.text;
+
+			// preparing urls
+			txt = txt.replace(
+				/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&\?\/.=]+/g,
+				function(url) {
+					var stripped = url;
+
+					if (stripped.length > 25) {
+						stripped = stripped.substring(0, 25) + '...';
+					}
+
+					return '<a target="_blank" href="' + url + '" title="' + url + '">' + stripped + '</a>';
+				}
+			);
 
 			// preparing nicks
 			txt = txt.replace(
@@ -188,8 +205,11 @@
 				.attr( {
 					'href': 'http://twitter.com/#!/' + tweetObj.tweet.user.screen_name,
 					'target': '_blank',
-					'title': tweetObj.tweet.user.screen_name + ' (' +
-						tweetObj.tweet.user.name + ')'
+					'title': '@' + tweetObj.tweet.user.screen_name + (
+						'name' in tweetObj.tweet.user 
+							? ' (' + tweetObj.tweet.user.name + ')'
+							: ''
+						)
 				} )
 				.appendTo(tweet);
 
@@ -328,7 +348,7 @@
 		) {
 			addTweet( {
 				tweet: {
-					text: 'Testing @silentroach tweet with many words and lines O.o great for makeup fixing and something to test. Don\'t know where to found enough words to make tweet bigger in height, so just test some links http://yfrog.com/3r7mzqj and a #hashtag and #hashtag2.',
+					text: 'Testing @silentroach tweet with many words and lines O.o great for makeup fixing and something to test. Don\'t know where to found enough words to make tweet bigger in height, so just test some links http://yfrog.com/3r7mzqj and a #hashtag and #hashtag2 and big links like this http://habrahabr.ru/blogs/gadgets/106319/ that\'s all.',
 					user: {
 						screen_name: 'silentroach',
 						profile_image_url: 'http://a2.twimg.com/profile_images/24736482/a_a09b53a_normal.jpg'

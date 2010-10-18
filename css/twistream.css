@@ -11,7 +11,7 @@ body {
 	overflow: hidden;
 }
 
-header {
+#top {
 	position: fixed;
 	top: 0px;
 	width: 100%;
@@ -29,11 +29,11 @@ h2 {
 	font-size: 12pt;
 }
 
-header h1, header h2 {
+#top h1, #top h2 {
 	float: left;
 }
 
-header h1 {
+#top h1 {
 	padding-left: 0.5em;
 }
 
@@ -43,7 +43,7 @@ header h1 {
 	color: silver;
 }
 
-header input {
+#top input {
 	float: right;
 	font-size: 12pt;
 	padding: 0.4em;
@@ -52,6 +52,13 @@ header input {
 	background-color: #1a1b1f;
 	color: white;
 	border: 1px solid grey;
+}
+
+#top #sp {
+	float: right;
+	margin-right: 0.5em;
+	padding-top: 6px;
+	cursor: pointer;
 }
 
 #maps {

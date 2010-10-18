@@ -15,11 +15,41 @@
 		var logtimer = null;
 		var pchangedtimer = null;
 
+		var paused = false;
+
 		var topElement = $('#top');
 		var logger = $('#logger');
+		var stopplay = $('#sp img');
 
 		topElement.css( { opacity: 0.8 } );
 		$('#tweets').css( { opacity: 0.9 } );
+
+		var updateState = function() {
+			if (paused) {
+				stopplay.attr( {
+					src: 'img/play.png',
+					title: 'resume'
+				} );
+			} else {
+				stopplay.attr( {
+					src: 'img/pause.png',
+					title: 'pause'
+				} );
+			}
+		}
+
+		var togglePause = function() {
+			paused = !paused;
+			updateState();
+
+			if (paused) {
+				log('Pause');
+			} else {
+				log('Resuming');
+			}
+
+			changeParams();
+		}
 
 		var _log = function(message) {
 			logger
@@ -234,13 +264,17 @@
 		}
 
 		var changeParams = function() {
-			log('Applying new stream subscription params');
-
 			if (null != connection) {
 				if (connection.connected()) {
 					connection.close();
 				}
 			}
+
+			if (paused) {
+				return;
+			}
+
+			log('Applying new stream subscription params');
 
 			var requestAttrs = {} /*{
 				track: 'google'
@@ -323,6 +357,8 @@
 			mapCoordsChangedHandler();
 		}
 
+		stopplay.click(togglePause);
+
 		if ('geolocation' in navigator) {
 			navigator.geolocation.getCurrentPosition( function(position) {
 				if (
@@ -344,6 +380,8 @@
 		} else {
 			changeParams();
 		}
+
+		updateState();
 
 		if (
 			'makeup' in settings

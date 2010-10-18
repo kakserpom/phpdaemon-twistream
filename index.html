@@ -16,12 +16,13 @@
 		<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 		<script src="js/twistream.js"></script>
 
-		<header id="top">
+		<div id="top">
 			<h1>TwiStream</h1>
 			<h2 id="logger"></h2>
-			
+
 			<input type="text" />
-		</header>
+			<a id="sp"><img src="img/pause.png" /></a>
+		</div>
 
 		<div id="maps"></div>
 
@@ -30,7 +31,7 @@
 		<script>
 			(function($) {
 				$.twistream( {
-//					makeup: true,  // temporary
+					makeup: true,  // temporary
 					url: {
 						websocket: 'ws://' + document.domain + ':8047/TwiStream'
 					},

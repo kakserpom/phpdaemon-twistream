@@ -251,9 +251,12 @@
 				var mapBoundsNE = mapBounds.getNorthEast();
 				var mapBoundsSW = mapBounds.getSouthWest();
 
+				var cuttedEdge = mapBoundsNE.lng() - 
+					(mapBoundsNE.lng() - mapBoundsSW.lng()) / 100 * 31;
+	
 				requestAttrs['locations'] =
 					mapBoundsSW.lng() + ',' + mapBoundsSW.lat() + ',' +
-					mapBoundsNE.lng() + ',' + mapBoundsNE.lat();
+					cuttedEdge + ',' + mapBoundsNE.lat();
 			}
 
 			var packet = $.toJSON( {

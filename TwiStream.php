@@ -60,11 +60,11 @@ class TwiStreamWebSocketSession extends WebSocketRoute {
 
 	public function onFinish() {
 		while ($id = array_pop($this->requests)) {
-			if (!isset(Daemon::$worker->queue[$id])) {
+			if (!isset(Daemon::$process->queue[$id])) {
 				continue;
 			}
 
-			unset(Daemon::$worker->queue[$id]->sessions[$this->client->connId]);
+			unset(Daemon::$process->queue[$id]->sessions[$this->client->connId]);
 		}
 	}
 

@@ -218,38 +218,63 @@ WebSocketConnection = function() {
 	) {
 		// native WebSocket found
 		WebSocketProvider = WebSocket;
-		result = initProvider(settings['url']['websocket']);
+		initProvider(settings['url']['websocket']);
 	}
 
+	/*
 	if (!result) {
-		// Building WebSocketProvider skeleton similar to WebSocket
-		WebSocketProvider = function(url) {
-			var self = this;
-
-			self.URL = url;
-			self.bufferedAmount = 0;
-			self.readyState = 2;
-		};
+		WebSocketProvider = {};
 
 		// default constants
 		WebSocketProvider.prototype.CONNECTING = 0;
 		WebSocketProvider.prototype.OPEN       = 1;
 		WebSocketProvider.prototype.CLOSED     = 2;
+	}
+	*/
 
-		// event handlers
-		WebSocketProvider.prototype.onopen    = function() { };
-		WebSocketProvider.prototype.onmessage = function() { };
-		WebSocketProvider.prototype.onclose   = function() { };
-		WebSocketProvider.prototype.onerror   = function() { };
+	if (
+		!result
+		&& 'websocket' in settings['url']
+	) {
+		// checking for flash plugin
+		var flashInstalled = false;
+		if ('plugins' in navigator) {
+			for (var i in navigator.plugins) {
+				var plugin = navigator.plugins[i];
 
-		// providers have to override these methods:
-		WebSocketProvider.prototype.close     = function()     { };
-		WebSocketProvider.prototype.send      = function(data) { };
+				if (
+					'description' in plugin
+					&& plugin.description.indexOf('Shockwave Flash') >= 0
+				) {
+					flashInstalled = true;
+					break;
+				}
+			}
+		} else
+		if ('mimeTypes' in navigator) {
+			var tmp = navigator.mimeTypes['application/x-shockwave-flash'];
+
+			if (
+				tmp
+				&& tmp.enabledPlugin
+			) {
+				flashInstalled = true;
+			}
+		}
+
+		if (flashInstalled) {
+			// @todo setTimeout for check ?
+			$.getScript(settings['jspath'] + 'fabridge.js', function() {
+				WebSocketFlashSWFPath = settings['jspath'] + 'flash.swf';
+
+				$.getScript(settings['jspath'] + 'websocket.flash.js', function() {
+					initProvider(settings['url']['websocket']);
+				} )
+			} );
+		}
 	}
 
 	// @todo check other providers
-
-	return result;
 }
 
 /**

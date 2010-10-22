@@ -20,7 +20,7 @@
 			<h1>TwiStream</h1>
 			<h2 id="logger"></h2>
 
-			<input type="text" />
+			<input type="text" placeholder="specify keywords to filter the stream" />
 			<a id="sp"><img src="img/pause.png" /></a>
 		</div>
 
@@ -36,7 +36,8 @@
 						websocket: 'ws://' + document.domain + ':8047/TwiStream'
 					},
 					map    : '#maps',
-					logger : '#logger'
+					logger : '#logger',
+					feed: '#tweets'
 				} );
 			})(jQuery);
 		</script>

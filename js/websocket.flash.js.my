@@ -1,0 +1,183 @@
+/**
+ * Based on Hiroshi Ichikawa project "web-socket-js" (http://github.com/gimite/web-socket-js)
+ */
+
+WebSocketProvider = function(url) {
+	var self = this;
+	var bridge = null;
+	
+	self.url = url;
+	self.bufferedAmount = 0;
+	self.readyState = 2;
+
+// ---------------------------------------------------------------------------------
+// Public methods
+// ---------------------------------------------------------------------------------
+	
+	self.close = function() {
+		self.readyState = bridge.getReadyState();
+		
+		if (self.readyState != WebSocket.OPEN) {
+			return;
+		}
+		
+		bridge.close();
+		
+		self.readyState = WebSocket.CLOSED;
+		
+		self.onclose();
+	}
+	
+	self.send = function(msg) {
+		self.readyState = bridge.getReadyState();
+		
+		if (self.readyState !== WebSocket.OPEN) {
+			return false;
+		}
+		
+		var result = bridge.send(encodeURIComponent(data));
+		
+		if (result < 0) {
+			return true;
+		} else {
+			self.bufferedAmount = result;
+			return false;
+		}
+	}
+
+	self.addEventListener = function(type, listener, useCapture) {
+		console.dir(type, listener, useCapture);
+	}
+
+// ---------------------------------------------------------------------------------
+// Handlers
+// ---------------------------------------------------------------------------------
+
+	self.onopen    = function() { }
+	self.onclose   = function() { }
+	self.onerror   = function(e) { 
+		console.error(e);
+	}
+	self.onmessage = function(msg) { }
+
+	self.addEventListener = function(type, listener, useCapture) {
+		console.dir(type, listener, useCapture);
+	}
+
+// ---------------------------------------------------------------------------------
+//
+// ---------------------------------------------------------------------------------
+
+	var handleMessages = function() {
+		var arr = bridge.readSocketData();
+		
+		for (var i = 0; i < arr.length; i++) {
+			var data = decodeURIComponent(arr[i]);
+			
+			if (
+				window.MessageEvent
+				&& !window.opera
+			) {
+				msg = document.createEvent('MessageEvent');
+				msg.initMessageEvent('message', false, false, data, null, null, window, null);
+			} else {
+				msg = {data: data};
+			}
+			
+			self.onmessage(msg);
+		}
+	}
+
+// ---------------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------------
+	if ('undefined' === typeof WebSocketFlashSWFPath) {
+		return false;
+	}
+		
+	// adding swf to the end of page
+	// @todo CHECK UNNEEDED PARAMS
+	
+	if (
+		!('wsFlashInitialized' in window)
+	) {	
+		var swf = $('<object></object>')
+			.attr( {
+				id: 'FABridge',
+				data: WebSocketFlashSWFPath,
+				type: 'application/x-shockwave-flash',
+				allowScriptAccess: 'always',
+				enablejs: 'true',
+				swliveconnect: 'true',
+				hasPriority: 'true'
+			} )
+			.css( {
+				width: '1px',
+				height: '1px',
+				position: 'absolute',
+				left: '-1px',
+				top: '-1px'
+			} )
+			.appendTo('body');
+		
+		$('<param />').attr( { name: 'flashvars',         value: 'bridgeName=webSocket' } ).appendTo(swf);
+		$('<param />').attr( { name: 'movie',             value: WebSocketFlashSWFPath  } ).appendTo(swf);
+		$('<param />').attr( { name: 'allowScriptAccess', value: 'always' } ).appendTo(swf);
+		$('<param />').attr( { name: 'enablejs',          value: 'true' } ).appendTo(swf);
+		$('<param />').attr( { name: 'swliveconnect',     value: 'true' } ).appendTo(swf);
+		$('<param />').attr( { name: 'hasPriority',       value: 'true' } ).appendTo(swf);
+		
+		$('<embed></embed>')
+			.attr( {
+				src: WebSocketFlashSWFPath,
+				name: 'FABridge',
+				allowScriptAccess: 'always',
+				type: 'application/x-shockwave-flash',
+				flashvars: 'bridgeName=webSocket'
+			} )
+			.appendTo(swf);
+		
+		window.wsFlashInitialized = true;
+	}
+	
+	FABridge.addInitializationCallback("webSocket", function() {
+		var flashRoot = FABridge.webSocket.root();
+		flashRoot.setCallerUrl(location.href);
+	
+		bridge = flashRoot.create(url, null, null, 0, null);
+		bridge.setDebug(true);
+		
+		bridge.addEventListener('open', function(e) {
+			self.readyState = bridge.getReadyState();
+			
+			self.onopen();
+		} );
+		
+		bridge.addEventListener('close', function(e) {
+			self.readyState = bridge.getReadyState();
+			
+			self.onclose();
+		} );
+
+		bridge.addEventListener('message', function() {
+			handleMessages();
+		} );
+
+		bridge.addEventListener('error', function(e) {
+			self.onerror();
+		} );
+
+		bridge.addEventListener('stateChange', function(e) {
+			self.readyState = bridge.getReadyState();
+			self.bufferedAmount = e.getBufferedAmount();
+		} );
+	} );
+}
+
+window.webSocketLog = function(e) {
+	console.info(decodeURIComponent(e));
+}
+
+window.webSocketError = function(e) {
+	console.error(decodeURIComponent(e));
+}

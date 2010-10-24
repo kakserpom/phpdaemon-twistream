@@ -91,7 +91,8 @@ WebSocketConnection = function() {
 	self.connected = function() {
 		return (
 			provider
-			&& provider.OPEN === provider.readyState
+			// todo define provider.OPEN
+//			&& provider.OPEN === provider.readyState
 		);
 	}
 
@@ -211,6 +212,7 @@ WebSocketConnection = function() {
 	var result = false;
 
 	// Check the connection type and initialize provider
+	/*
 	if (
 		'WebSocket' in window
 		// only if settings.url.websocket is defined
@@ -220,6 +222,7 @@ WebSocketConnection = function() {
 		WebSocketProvider = WebSocket;
 		initProvider(settings['url']['websocket']);
 	}
+	*/
 
 	/*
 	if (!result) {
@@ -264,13 +267,13 @@ WebSocketConnection = function() {
 
 		if (flashInstalled) {
 			// @todo setTimeout for check ?
-			$.getScript(settings['jspath'] + 'fabridge.js', function() {
+			//$.getScript(settings['jspath'] + 'fabridge.js', function() {
 				WebSocketFlashSWFPath = settings['jspath'] + 'flash.swf';
 
-				$.getScript(settings['jspath'] + 'websocket.flash.js', function() {
+				//$.getScript(settings['jspath'] + 'websocket.flash.js', function() {
 					initProvider(settings['url']['websocket']);
-				} )
-			} );
+				//} )
+			//} );
 		}
 	}
 

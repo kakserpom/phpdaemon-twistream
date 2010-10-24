@@ -289,7 +289,7 @@
 		}
 
 		var changeParams = function() {
-			if (null != connection) {
+			if (null != connection) {	
 				if (connection.connected()) {
 					connection.close();
 				}
@@ -305,17 +305,19 @@
 				track: 'google'
 			};*/;
 
-			var mapBounds = places.map.getBounds();
-			if (null != mapBounds) {
-				var mapBoundsNE = mapBounds.getNorthEast();
-				var mapBoundsSW = mapBounds.getSouthWest();
+			if ('map' in places) {
+				var mapBounds = places.map.getBounds();
+				if (null != mapBounds) {
+					var mapBoundsNE = mapBounds.getNorthEast();
+					var mapBoundsSW = mapBounds.getSouthWest();
 
-				var cuttedEdge = mapBoundsNE.lng() - 
-					(mapBoundsNE.lng() - mapBoundsSW.lng()) / 100 * 31;
+					var cuttedEdge = mapBoundsNE.lng() - 
+						(mapBoundsNE.lng() - mapBoundsSW.lng()) / 100 * 31;
 	
-				requestAttrs['locations'] =
-					mapBoundsSW.lng() + ',' + mapBoundsSW.lat() + ',' +
-					cuttedEdge + ',' + mapBoundsNE.lat();
+					requestAttrs['locations'] =
+						mapBoundsSW.lng() + ',' + mapBoundsSW.lat() + ',' +
+						cuttedEdge + ',' + mapBoundsNE.lat();
+				}
 			}
 
 			var packet = $.toJSON( {
@@ -327,6 +329,8 @@
 				url: settings['url'],
 
 				onConnected: function() {
+					console.info('connected');
+				
 					if (
 						'makeup' in settings
 						&& settings.makeup
@@ -334,6 +338,7 @@
 						// 'tis a temporary block just for makeup
 					}
 					else {
+						console.info('send');
 						this.send(packet);
 					}
 				},
@@ -468,6 +473,7 @@
 // ---------------------------------------------------------------------------------
 
 		updateState();
+		changeParams();  // FIXME for debug
 
 // ---------------------------------------------------------------------------------
 // Something to test and for a makeup
